@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:slide_countdown/slide_countdown.dart';
 import 'package:yuukfokus/helper/assets_url.dart';
 
 class HomePage extends StatefulWidget {
@@ -10,6 +11,24 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late final StreamDuration _streamDuration;
+
+  @override
+  void initState() {
+    super.initState();
+    _streamDuration = StreamDuration(
+      config: const StreamDurationConfig(
+        countDownConfig: CountDownConfig(duration: Duration(minutes: 0)),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _streamDuration.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,13 +58,23 @@ class _HomePageState extends State<HomePage> {
                       // fit: BoxFit.cover,
                     ),
                   ),
-                  child: Text(
-                    "22 : 59",
-                    style: GoogleFonts.pixelifySans(
-                      textStyle: TextStyle(fontSize: 60),
-                      color: Colors.black,
-                    ),
-                  ),
+                  child:
+                      // Text(
+                      //   "22 : 59",
+                      //   style: GoogleFonts.pixelifySans(
+                      //     textStyle: TextStyle(fontSize: 60),
+                      //     color: Colors.black,
+                      //   ),
+                      // ),
+                      SlideCountdownSeparated(
+                        decoration: BoxDecoration(),
+                        style: GoogleFonts.pixelifySans(
+                          textStyle: TextStyle(fontSize: 60),
+                          color: Colors.black,
+                        ),
+
+                        streamDuration: _streamDuration,
+                      ),
                 ),
                 const SizedBox(height: 20.0),
                 Padding(
@@ -53,7 +82,13 @@ class _HomePageState extends State<HomePage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Image.asset(AssetsUrl.start, height: 50),
+                      InkWell(
+                        onTap: () {
+                          _streamDuration.add(const Duration(minutes: 10));
+                          _streamDuration.resume();
+                        },
+                        child: Image.asset(AssetsUrl.start, height: 50),
+                      ),
                       Image.asset(AssetsUrl.stop, height: 50),
                     ],
                   ),
@@ -71,6 +106,12 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
+    );
+  }
+
+  DateTime startTimer({int? minute, int? second}) {
+    return DateTime.now().add(
+      Duration(minutes: minute ?? 0, seconds: second ?? 0),
     );
   }
 
