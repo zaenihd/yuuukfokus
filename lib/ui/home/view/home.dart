@@ -29,6 +29,9 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  final todoC = TextEditingController();
+  final waktuC = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,11 +42,15 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  "to do",
-                  style: GoogleFonts.pixelifySans(
-                    textStyle: TextStyle(fontSize: 60),
-                    color: Colors.white,
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    textAlign: TextAlign.center,
+                    todoC.text,
+                    style: GoogleFonts.pixelifySans(
+                      textStyle: TextStyle(fontSize: 50),
+                      color: Colors.white,
+                    ),
                   ),
                 ),
                 Container(
@@ -84,7 +91,7 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       InkWell(
                         onTap: () {
-                          _streamDuration.add(const Duration(minutes: 10));
+                    
                           _streamDuration.resume();
                         },
                         child: Image.asset(AssetsUrl.start, height: 50),
@@ -118,14 +125,24 @@ class _HomePageState extends State<HomePage> {
   Align _addTodo() {
     return Align(
       alignment: Alignment.topRight,
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 50, horizontal: 20),
-        width: 50,
-        height: 50,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(AssetsUrl.add),
-            fit: BoxFit.cover,
+      child: InkWell(
+        onTap: () {
+          showImageDialog(
+            context,
+            waktuC: waktuC,
+            todoC: todoC,
+            streamDuration: _streamDuration,
+          );
+        },
+        child: Container(
+          margin: EdgeInsets.symmetric(vertical: 50, horizontal: 20),
+          width: 50,
+          height: 50,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(AssetsUrl.add),
+              fit: BoxFit.cover,
+            ),
           ),
         ),
       ),
@@ -144,4 +161,198 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+}
+
+Future<void> showImageDialog(
+  BuildContext context, {
+  required TextEditingController todoC,
+  required TextEditingController waktuC,
+  required StreamDuration streamDuration,
+  String? title,
+  String? description,
+  String primaryActionText = 'OK',
+  VoidCallback? onPrimaryAction,
+}) {
+  return showGeneralDialog(
+    context: context,
+    barrierDismissible: true,
+    barrierLabel: 'Close',
+    barrierColor: Colors.black54,
+    transitionDuration: const Duration(milliseconds: 200),
+    pageBuilder: (ctx, _, __) {
+      return Center(
+        child: Material(
+          color: Colors.transparent,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: MediaQuery.of(ctx).size.width * 0.86,
+                decoration: BoxDecoration(
+                  color: Theme.of(ctx).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 24,
+                      color: Colors.black.withOpacity(0.2),
+                      offset: const Offset(0, 12),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Header image di dalam Container (bukan langsung Image widget)
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 30,
+                        vertical: 30,
+                      ),
+                      height: 250,
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(24),
+                          topRight: Radius.circular(24),
+                        ),
+                        image: DecorationImage(
+                          image: AssetImage(AssetsUrl.form),
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            controller: todoC,
+                            decoration: InputDecoration(
+                              hintText: "Masukkan To do Kamu", // teks hint
+                              // teks label di atas
+                              border: OutlineInputBorder(
+                                // border kotak
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(12),
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                // border saat fokus
+                                borderSide: BorderSide(
+                                  color: Colors.grey,
+                                  width: 2,
+                                ),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(12),
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                // border normal
+                                borderSide: BorderSide(
+                                  color: Colors.grey,
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(12),
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "To Do Tidak boleh kosong";
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20.0),
+                          TextFormField(
+                            controller: waktuC,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              suffix: Text("Menit"),
+                              hintText: "Masukkan Waktu kamu ", // teks hint
+                              // teks label di atas
+                              border: OutlineInputBorder(
+                                // border kotak
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(12),
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                // border saat fokus
+                                borderSide: BorderSide(
+                                  color: Colors.grey,
+                                  width: 2,
+                                ),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(12),
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                // border normal
+                                borderSide: BorderSide(
+                                  color: Colors.grey,
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(12),
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "To Do Tidak boleh kosong";
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 10.0),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(
+                                226,
+                                235,
+                                150,
+                                23,
+                              ), // warna background
+                              foregroundColor: Colors.white, // warna teks/icon
+                            ),
+                            onPressed: () {
+                              
+                              streamDuration.add(
+                                Duration(minutes: int.parse(waktuC.text)),
+                              );
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                              "Yuk Fokuus!",
+                              style: GoogleFonts.pixelifySans(
+                                textStyle: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Tombol close melayang
+            ],
+          ),
+        ),
+      );
+    },
+    transitionBuilder: (ctx, anim, _, child) {
+      // Animasi scale + fade
+      final curved = CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
+      return FadeTransition(
+        opacity: curved,
+        child: ScaleTransition(
+          scale: Tween(begin: 0.95, end: 1.0).animate(curved),
+          child: child,
+        ),
+      );
+    },
+  );
 }
