@@ -8,5 +8,6 @@ class AssetsUrl {
   static const stop = 'assets/stop.png';
   static const timer = 'assets/timer.png';
   static const icon = 'assets/icon.png';
+  static const pause = 'assets/pause.png';
 
 }
